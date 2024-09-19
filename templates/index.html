@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXBOT</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>PIXBOT</h1>
+    </div>
+    <div class="chat-container" id="chat-container">
+        <div class="content">Initializing PIXBOT...</div>
+    </div>
+    <div class="input-container">
+        <form id="chat-form" enctype="multipart/form-data">
+            <input type="file" id="image-input" name="image" accept="image/*" required><br><br>
+            <input type="text" id="message-input" placeholder="Ask a question about the image..." required>
+            <button type="submit" class="send-button">Send</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('chat-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const imageInput = document.getElementById('image-input');
+            const questionInput = document.getElementById('message-input');
+            const responseDiv = document.querySelector('.content');
+            
+            // Append the image and question to form data
+            formData.append('image', imageInput.files[0]);
+            formData.append('question', questionInput.value);
+            
+            // Send the form data to the Flask backend
+            const response = await fetch('/ask', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            responseDiv.innerHTML = `<p><strong>Answer:</strong> ${data.answer}</p>`;
+        });
+    </script>
+</body>
+</html>
